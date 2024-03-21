@@ -1,6 +1,5 @@
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
-import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import express from "express";
 import { createServer } from "http";
 import { WebSocketServer } from "ws";
@@ -14,40 +13,38 @@ const app = express();
 // 2. Create a WebSocket server with ws
 const httpServer = createServer(app);
 const wsServer = new WebSocketServer({
-  server: httpServer,
-  path: "/graphql",
+    server: httpServer,
+    path: "/graphql",
 });
 // 3. Use graphql-ws to handle WebSocket requests
 const serverCleanup = useServer({ schema }, wsServer);
 // 4. Configure Apollo Server
 const server = new ApolloServer({
-  schema,
-  // 5. Add a plugin to drain the HTTP connection
-  plugins: [
-    ApolloServerPluginDrainHttpServer({ httpServer }),
-    // 6. Add a plugin to drain the WebSocket server
-    {
-      async serverWillStart() {
-        return {
-          async drainServer() {
-            await serverCleanup.dispose();
-          },
-        };
-      },
-    },
-  ],
+    schema,
+    // 5. Add a plugin to drain the HTTP connection
+    plugins: [
+        // ApolloServerPluginDrainHttpServer({ httpServer }),
+        // 6. Add a plugin to drain the WebSocket server
+        {
+            async serverWillStart() {
+                return {
+                    async drainServer() {
+                        await serverCleanup.dispose();
+                    },
+                };
+            },
+        },
+    ],
 });
 // 7. Start the Apollo server
 (async () => {
-  await server.start();
-  // 8. Add HTTP middleware for Apollo
-  app.use("/graphql", cors(), bodyParser.json(), expressMiddleware(server));
-  // 9. Start the HTTP server
-  httpServer.listen(PORT, () => {
-    console.log(
-      `GraphQL server ready at https://usersserver-aj90.onrender.com:${PORT}` ||
-        `GraphQL server ready at http://localhost:${PORT}`
-    );
-    console.log(`WebSocket endpoint ready at ws://localhost:${PORT}/graphql`);
-  });
+    await server.start();
+    // 8. Add HTTP middleware for Apollo
+    app.use("/graphql", cors(), bodyParser.json(), expressMiddleware(server));
+    // 9. Start the HTTP server
+    httpServer.listen(PORT, () => {
+        console.log(`GraphQL server ready at https://usersserver-aj90.onrender.com:${PORT}` ||
+            `GraphQL server ready at http://localhost:${PORT}`);
+        console.log(`WebSocket endpoint ready at ws://localhost:${PORT}/graphql`);
+    });
 })();

@@ -28,7 +28,7 @@ const server = new ApolloServer({
 
   // 5. Add a plugin to drain the HTTP connection
   plugins: [
-    ApolloServerPluginDrainHttpServer({ httpServer }),
+    // ApolloServerPluginDrainHttpServer({ httpServer }),
 
     // 6. Add a plugin to drain the WebSocket server
     {
