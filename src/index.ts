@@ -9,7 +9,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import schema from "./graphql/schema.js";
 // 1. Create an HTTP server with Express
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 const app = express();
 
 // 2. Create a WebSocket server with ws
@@ -52,7 +52,10 @@ const server = new ApolloServer({
 
   // 9. Start the HTTP server
   httpServer.listen(PORT, () => {
-    console.log(`GraphQL server ready at http://localhost:${PORT}`);
+    console.log(
+      `GraphQL server ready at https://usersserver-aj90.onrender.com:${PORT}` ||
+        `GraphQL server ready at http://localhost:${PORT}`
+    );
     console.log(`WebSocket endpoint ready at ws://localhost:${PORT}/graphql`);
   });
 })();
