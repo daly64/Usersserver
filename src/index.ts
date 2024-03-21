@@ -11,7 +11,7 @@ import schema from "./graphql/schema.js";
 // 1. Create an HTTP server with Express
 const PORT = process.env.PORT || 4000;
 const app = express();
-
+app.options("*", cors());
 // 2. Create a WebSocket server with ws
 const httpServer = createServer(app);
 const wsServer = new WebSocketServer({
